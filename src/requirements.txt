@@ -1,0 +1,10 @@
+boto3==1.33.7
+botocore==1.33.7
+opencv_python==4.8.1.78
+Pillow==9.5.0
+torch==2.1.0+cu121
+torchvision==0.16.0+cu121
+tqdm==4.43.0
+tqdm==4.66.1
+ultralytics==8.0.23
+pillow==9.5.0

@@ -1,0 +1,7 @@
+.venv/
+images/
+videos/
+datasets/
+OID/
+runs/
+src/__pycache__
