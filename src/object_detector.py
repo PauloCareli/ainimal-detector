@@ -1,4 +1,5 @@
 import cv2
+
 from ultralytics import YOLO
 
 from paths import MODEL_PATH

@@ -5,5 +5,8 @@ val: validation/images  # val images (relative to 'path')
 
 # Classes
 names:
-  0: cat
+  0: alpaca
   1: dog
+  2: cat
+  3: jaguar
+  4: cabra

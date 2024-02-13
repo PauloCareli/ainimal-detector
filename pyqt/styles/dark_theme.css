@@ -1,0 +1,18 @@
+/* Dark Theme Styles */
+QWidget {
+    background-color: #2E2E2E;
+    color: #FFFFFF;
+}
+
+QPushButton {
+    background-color: #1E1E1E;
+    color: #FFFFFF;
+}
+
+QPushButton:hover {
+    background-color: #3E3E3E;
+}
+
+QLabel {
+    color: #FFFFFF;
+}

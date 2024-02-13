@@ -1,0 +1,38 @@
+/* Modern Button Styles */
+QPushButton {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Primary Button */
+QPushButton-primary {
+    background-color: #3498db;
+    color: #fff;
+}
+
+/* Secondary Button */
+QPushButton-secondary {
+    background-color: #2ecc71;
+    color: #fff;
+}
+
+/* Hover Effects */
+QPushButton:hover {
+    background-color: #2980b9;
+    color: #fff;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 600px) {
+    QPushButton {
+        width: 100%;
+    }
+}

@@ -1,0 +1,18 @@
+/* Light Theme Styles */
+QWidget {
+    background-color: #FFFFFF;
+    color: #000000;
+}
+
+QPushButton {
+    background-color: #EDEDED;
+    color: #000000;
+}
+
+QPushButton:hover {
+    background-color: #CCCCCC;
+}
+
+QLabel {
+    color: #000000;
+}
