@@ -5,3 +5,8 @@ datasets/
 OID/
 runs/
 src/__pycache__
+pyqt/models/__pycache__
+pyqt/presenters/__pycache__
+pyqt/views/__pycache__
+pyqt/themes/__pycache__
+pyqt/utils/__pycache__
