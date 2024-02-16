@@ -14,8 +14,6 @@ class Theme:
         selected_theme = getattr(self, theme, None)
 
         if selected_theme:
-            # Do something with the selected theme
-            # For example, you might want to set it as the current theme
             selected_theme.apply()
             print(f"Theme set to {theme}")
         else:

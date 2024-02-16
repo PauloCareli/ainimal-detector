@@ -1,7 +1,11 @@
+from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtWidgets import QTabWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QStackedWidget, QWidget
+from PyQt5.QtCore import Qt
 
-from utils.paths import get_css_path
+from utils.paths import get_css_path, get_icon_path
 from utils.styles import load_css
+
+ICON_SIZE = 30
 
 
 class Sidebar(QWidget):
@@ -11,12 +15,13 @@ class Sidebar(QWidget):
         self.window = view_instance.window
 
         # add all widgets
-        self.theme_btn = QPushButton('Theme', self)
+        self.theme_btn = QtWidgets.QToolButton(self)
+        self.theme_btn.setMinimumHeight(ICON_SIZE)
         self.btn_0 = QPushButton('Home', self)
         self.btn_1 = QPushButton('Predict', self)
         self.btn_2 = QPushButton('Report', self)
         self.btn_3 = QPushButton('Image', self)
-        self.btn_4 = QPushButton('Config', self)
+        self.btn_4 = QPushButton('Settings', self)
 
         self.theme_btn.clicked.connect(self.theme)
         self.btn_0.clicked.connect(self.button0)
@@ -36,17 +41,28 @@ class Sidebar(QWidget):
 
     def initUI(self):
         left_layout = QVBoxLayout()
-        left_layout.addWidget(self.theme_btn)
-        left_layout.addWidget(self.btn_0)
-        left_layout.addWidget(self.btn_1)
-        left_layout.addWidget(self.btn_2)
-        left_layout.addWidget(self.btn_3)
-        left_layout.addWidget(self.btn_4)
+        left_layout_top = QVBoxLayout()
+        left_layout_middle = QVBoxLayout()
+        left_layout_bottom = QVBoxLayout()
+        left_layout_top.addWidget(self.theme_btn, alignment=Qt.AlignCenter)
+        left_layout_middle.addWidget(self.btn_0)
+        left_layout_middle.addWidget(self.btn_1)
+        left_layout_middle.addWidget(self.btn_2)
+        left_layout_middle.addWidget(self.btn_3)
+        left_layout_bottom.addWidget(self.btn_4)
+        left_layout_middle.addStretch(5)
+        left_layout_middle.setSpacing(20)
+        left_layout.addLayout(left_layout_top)
+        left_layout.addLayout(left_layout_middle)
+        left_layout.addLayout(left_layout_bottom)
         left_layout.addStretch(5)
         left_layout.setSpacing(20)
+
+        left_layout.setStretch(0, 10)
+        left_layout.setStretch(1, 80)
+        left_layout.setStretch(2, 10)
         left_widget = QWidget()
         left_widget.setLayout(left_layout)
-        load_css(left_widget, get_css_path().get("sidebar"))
 
         self.right_widget = QTabWidget()
         self.right_widget.tabBar().setObjectName("mainTab")
@@ -58,16 +74,42 @@ class Sidebar(QWidget):
         self.right_widget.addTab(self.tab4, '')
 
         self.right_widget.setCurrentIndex(0)
-        self.right_widget.setStyleSheet('''QTabBar::tab{width: 0; \
-            height: 0; margin: 0; padding: 0; border: none;}''')
+        load_css(left_widget, get_css_path().get("sidebar"))
+        load_css(self.right_widget, get_css_path().get("sidebar"))
 
-        main_layout = QHBoxLayout()
-        main_layout.addWidget(left_widget)
-        main_layout.addWidget(self.right_widget)
-        main_layout.setStretch(0, 40)
-        main_layout.setStretch(1, 200)
+        main_layout = QVBoxLayout()
+        main_layout.addWidget(self.view.title_bar)
+        # main_layout.setContentsMargins(0, 0, 0, 0)
+        # main_layout.setSpacing(0)
+
+        secondary_layout = QHBoxLayout()
+        secondary_layout.addWidget(left_widget)
+        secondary_layout.addWidget(self.right_widget)
+        secondary_layout.setContentsMargins(5, 5, 5, 5)
+        secondary_layout.setSpacing(0)
+
+        secondary_layout.setStretch(0, 40)
+        secondary_layout.setStretch(1, 200)
+        main_layout.addLayout(secondary_layout)
+        # main_layout.addWidget(left_widget)
+        # main_layout.addWidget(self.right_widget)
+        # main_layout.setStretch(0, 40)
+        # main_layout.setStretch(1, 200)
         main_widget = QWidget()
         main_widget.setLayout(main_layout)
+
+        # self.window.addWidget(main_widget)
+
+        # vbox = QtWidgets.QVBoxLayout(self)
+        # vbox.addWidget(self)
+        # vbox.setContentsMargins(0, 0, 0, 0)
+        # vbox.setSpacing(0)
+        # layout = QtWidgets.QVBoxLayout()
+        # layout.addWidget(self.m_content)
+        # layout.setContentsMargins(5, 5, 5, 5)
+        # layout.setSpacing(0)
+        # vbox.addLayout(layout)
+
         self.window.setCentralWidget(main_widget)
 
     # -----------------
@@ -92,20 +134,15 @@ class Sidebar(QWidget):
     # pages
 
     def theme(self):
+        self.theme_btn.setIcon(QtGui.QIcon(
+            get_icon_path().get("base") + f'{self.view.presenter.model.config_model.theme}.svg'))
         if self.view.presenter.model.config_model.theme == "light":
             self.view.presenter.model.config_model.theme = "dark"
         else:
             self.view.presenter.model.config_model.theme = "light"
-        print(self.view.presenter.model.config_model.theme)
         self.view.theme.set_theme(
             self.view.presenter.model.config_model.theme)
         return
-        main_layout = QVBoxLayout()
-        main_layout.addWidget(QLabel('page 0'))
-        main_layout.addStretch(5)
-        main = QWidget()
-        main.setLayout(main_layout)
-        return main
 
     def home(self):
         main_layout = QVBoxLayout()

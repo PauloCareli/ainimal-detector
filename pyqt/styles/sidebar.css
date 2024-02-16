@@ -7,8 +7,8 @@ QPushButton {
     text-align: center;
     text-decoration: none;
     cursor: pointer;
-    border: none;
-    border-radius: 5px;
+    border: 2px solid #000;
+    border-radius: 6px;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -26,13 +26,31 @@ QPushButton-secondary {
 
 /* Hover Effects */
 QPushButton:hover {
-    background-color: #2980b9;
+    background-color: #00ccff;
     color: #fff;
 }
 
-/* Responsive Design */
-@media screen and (max-width: 600px) {
-    QPushButton {
-        width: 100%;
-    }
+QTabBar::tab {
+    width: 0;    
+    height: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+QToolButton {
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 6px;
+    padding: 5px 5px;
+    border: 2px solid #000;
+    transition: background-color 0.3s ease;
+
+}
+
+QToolButton:hover {
+    background-color: #00ccff;
+    font-size: 11px;
+    padding: 5px;
 }

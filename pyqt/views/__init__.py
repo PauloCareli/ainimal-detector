@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QMainWindow
 from .image import ImageView
 from .config import ConfigView
 from .main import MainWindow
+from .title_bar import TitleBar
 from .sidebar import Sidebar
 from .csv_viewer import CSVView
 from themes import Theme
@@ -16,6 +17,7 @@ class View:
         self.image_view = ImageView(self)
         self.config_view = ConfigView(self)
         self.csv_view = CSVView(self)
+        self.title_bar = TitleBar(self)
 
         self.theme = Theme(self)
         # Router

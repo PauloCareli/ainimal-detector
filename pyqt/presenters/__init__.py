@@ -1,4 +1,6 @@
 
+from PyQt5 import QtGui
+from utils.paths import get_icon_path
 
 from .image import ImagePresenter
 
@@ -10,6 +12,8 @@ class Presenter:
         self.view.presenter = self
 
         self.image_presenter = ImagePresenter(model, view)
+
+        self.on_load_app()
 
     def delegate_to_presenter(self, presenter, method_name, *args, **kwargs):
         # Generic method to delegate a call to a specific presenter and method
@@ -32,3 +36,10 @@ class Presenter:
     def get_video_frame(self, file_path):
         self.delegate_to_presenter(
             self.image_presenter, 'get_video_frame', file_path)
+
+    def on_load_app(self):
+        current_theme = self.model.config_model.theme
+        self.view.sidebar.theme_btn.setIcon(QtGui.QIcon(
+            get_icon_path().get("base") + f'{"dark" if current_theme == "light" else "dark"}.svg'))
+        self.view.theme.set_theme(
+            self.model.config_model.theme)
