@@ -16,3 +16,29 @@ QPushButton:hover {
 QLabel {
     color: #FFFFFF;
 }
+
+QTableWidget {
+    background-color: #333;
+    color: white;
+}
+
+QHeaderView::section {
+    background-color: #333;
+    color: white;
+    padding: 5px;
+}
+
+QTableWidget::item:selected {
+    background-color: #00ccff;
+    color: white;
+}
+
+QHeaderView::section:checked {
+    background-color: #00ccff;
+}
+
+QTableCornerButton::section {
+    background-color: #00ccff;
+    /* Color for the corner button */
+    color: #000;
+}
