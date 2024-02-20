@@ -22,13 +22,20 @@ class Sidebar(QWidget):
         self.btn_2 = QPushButton('Report', self)
         self.btn_3 = QPushButton('Image', self)
         self.btn_4 = QPushButton('Settings', self)
+        self.btn_5 = QPushButton('About', self)
 
+        # First Box
         self.theme_btn.clicked.connect(self.theme)
-        self.btn_0.clicked.connect(self.button0)
-        self.btn_1.clicked.connect(self.button1)
-        self.btn_2.clicked.connect(self.button2)
-        self.btn_3.clicked.connect(self.button3)
-        self.btn_4.clicked.connect(self.button4)
+
+        # Second box
+        self.btn_0.clicked.connect(lambda: self.on_button_click(self.btn_0, 0))
+        self.btn_1.clicked.connect(lambda: self.on_button_click(self.btn_1, 1))
+        self.btn_2.clicked.connect(lambda: self.on_button_click(self.btn_2, 2))
+        self.btn_3.clicked.connect(lambda: self.on_button_click(self.btn_3, 3))
+
+        # Third box
+        self.btn_4.clicked.connect(lambda: self.on_button_click(self.btn_4, 4))
+        self.btn_5.clicked.connect(lambda: self.on_button_click(self.btn_5, 5))
 
         # add tabs
         self.tab0 = self.home()
@@ -36,6 +43,7 @@ class Sidebar(QWidget):
         self.tab2 = self.report()
         self.tab3 = self.ui_image()
         self.tab4 = self.ui_config()
+        self.tab5 = self.about()
 
         self.initUI()
 
@@ -50,6 +58,7 @@ class Sidebar(QWidget):
         left_layout_middle.addWidget(self.btn_2)
         left_layout_middle.addWidget(self.btn_3)
         left_layout_bottom.addWidget(self.btn_4)
+        left_layout_bottom.addWidget(self.btn_5)
         left_layout_middle.addStretch(5)
         left_layout_middle.setSpacing(20)
         left_layout.addLayout(left_layout_top)
@@ -72,6 +81,7 @@ class Sidebar(QWidget):
         self.right_widget.addTab(self.tab2, '')
         self.right_widget.addTab(self.tab3, '')
         self.right_widget.addTab(self.tab4, '')
+        self.right_widget.addTab(self.tab5, '')
 
         self.right_widget.setCurrentIndex(0)
         load_css(left_widget, get_css_path().get("sidebar"))
@@ -112,26 +122,22 @@ class Sidebar(QWidget):
 
         self.window.setCentralWidget(main_widget)
 
-    # -----------------
-    # buttons
+    # --------------------------------------------------------------------- #
 
-    def button0(self):
-        self.right_widget.setCurrentIndex(0)
+    def on_button_click(self, button, index):
+        self.right_widget.setCurrentIndex(index)
+        self.highlight_button(button)
 
-    def button1(self):
-        self.right_widget.setCurrentIndex(1)
+    def highlight_button(self, button):
+        # Reset the stylesheet for all buttons
+        for btn in [self.btn_0, self.btn_1, self.btn_2, self.btn_3, self.btn_4, self.btn_5]:
+            btn.setStyleSheet('')
 
-    def button2(self):
-        self.right_widget.setCurrentIndex(2)
+        # Highlight it
+        button.setStyleSheet('background-color: #00ccff;;')
 
-    def button3(self):
-        self.right_widget.setCurrentIndex(3)
-
-    def button4(self):
-        self.right_widget.setCurrentIndex(4)
-
-    # -----------------
-    # pages
+    # --------------------------------------------------------------------- #
+    # Pages
 
     def theme(self):
         self.theme_btn.setIcon(QtGui.QIcon(
@@ -168,3 +174,6 @@ class Sidebar(QWidget):
 
     def ui_config(self):
         return self.view.config_view
+
+    def about(self):
+        return self.view.about_view
