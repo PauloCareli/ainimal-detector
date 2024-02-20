@@ -16,4 +16,11 @@ def get_icon_path():
 
     return {
         "base": base,
+        "menu": base + "menu.png",
+        "home": base + "home.png",
+        "predict": base + "predict.png",
+        "report": base + "report.png",
+        "image": base + "image.png",
+        "settings": base + "settings.svg",
+        "about": base + "about.png",
     }
