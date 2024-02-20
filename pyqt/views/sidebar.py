@@ -1,6 +1,7 @@
-from PyQt5 import QtWidgets, QtGui
-from PyQt5.QtWidgets import QTabWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QStackedWidget, QWidget
+from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QTabWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QWidget
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
 
 from utils.paths import get_css_path, get_icon_path
 from utils.styles import load_css
@@ -17,12 +18,25 @@ class Sidebar(QWidget):
         # add all widgets
         self.theme_btn = QtWidgets.QToolButton(self)
         self.theme_btn.setMinimumHeight(ICON_SIZE)
-        self.btn_0 = QPushButton('Home', self)
-        self.btn_1 = QPushButton('Predict', self)
-        self.btn_2 = QPushButton('Report', self)
-        self.btn_3 = QPushButton('Image', self)
-        self.btn_4 = QPushButton('Settings', self)
-        self.btn_5 = QPushButton('About', self)
+
+        # Add the three-line menu button
+        self.menu_btn = QtWidgets.QToolButton(self)
+        self.menu_btn.setIcon(QIcon(get_icon_path().get("menu")))
+        self.menu_btn.clicked.connect(self.toggle_menu)
+        self.menu_visible = True
+
+        self.btn_0 = QPushButton(
+            QIcon(get_icon_path().get("home")), 'Home', self)
+        self.btn_1 = QPushButton(
+            QIcon(get_icon_path().get("predict")), 'Predict', self)
+        self.btn_2 = QPushButton(
+            QIcon(get_icon_path().get("report")), 'Report', self)
+        self.btn_3 = QPushButton(
+            QIcon(get_icon_path().get("image")), 'Image', self)
+        self.btn_4 = QPushButton(
+            QIcon(get_icon_path().get("settings")), 'Settings', self)
+        self.btn_5 = QPushButton(
+            QIcon(get_icon_path().get("about")), 'About', self)
 
         # First Box
         self.theme_btn.clicked.connect(self.theme)
@@ -53,6 +67,7 @@ class Sidebar(QWidget):
         left_layout_middle = QVBoxLayout()
         left_layout_bottom = QVBoxLayout()
         left_layout_top.addWidget(self.theme_btn, alignment=Qt.AlignCenter)
+        left_layout_top.addWidget(self.menu_btn, alignment=Qt.AlignCenter)
         left_layout_middle.addWidget(self.btn_0)
         left_layout_middle.addWidget(self.btn_1)
         left_layout_middle.addWidget(self.btn_2)
@@ -89,8 +104,6 @@ class Sidebar(QWidget):
 
         main_layout = QVBoxLayout()
         main_layout.addWidget(self.view.title_bar)
-        # main_layout.setContentsMargins(0, 0, 0, 0)
-        # main_layout.setSpacing(0)
 
         secondary_layout = QHBoxLayout()
         secondary_layout.addWidget(left_widget)
@@ -100,29 +113,16 @@ class Sidebar(QWidget):
 
         secondary_layout.setStretch(0, 40)
         secondary_layout.setStretch(1, 200)
+        self.secondary_layout = secondary_layout
         main_layout.addLayout(secondary_layout)
-        # main_layout.addWidget(left_widget)
-        # main_layout.addWidget(self.right_widget)
-        # main_layout.setStretch(0, 40)
-        # main_layout.setStretch(1, 200)
+
         main_widget = QWidget()
         main_widget.setLayout(main_layout)
-
-        # self.window.addWidget(main_widget)
-
-        # vbox = QtWidgets.QVBoxLayout(self)
-        # vbox.addWidget(self)
-        # vbox.setContentsMargins(0, 0, 0, 0)
-        # vbox.setSpacing(0)
-        # layout = QtWidgets.QVBoxLayout()
-        # layout.addWidget(self.m_content)
-        # layout.setContentsMargins(5, 5, 5, 5)
-        # layout.setSpacing(0)
-        # vbox.addLayout(layout)
 
         self.window.setCentralWidget(main_widget)
 
     # --------------------------------------------------------------------- #
+    # Sidebar Methods
 
     def on_button_click(self, button, index):
         self.right_widget.setCurrentIndex(index)
@@ -136,11 +136,43 @@ class Sidebar(QWidget):
         # Highlight it
         button.setStyleSheet('background-color: #00ccff;;')
 
+    def hide_buttons(self):
+        # Hide only the text labels of the buttons
+        for btn, label in [(self.btn_0, "Home"), (self.btn_1, "Predict"), (self.btn_2, "Report"),
+                           (self.btn_3, "Image"), (self.btn_4, "Settings"), (self.btn_5, "About")]:
+            original_text = btn.text()  # Store the original text
+            btn.setProperty("original_text", original_text)
+            btn.setText("")
+            label_widget = QLabel(label)
+            label_widget.setAlignment(Qt.AlignCenter)
+        self.update_sidebar_size()
+
+    def show_buttons(self):
+        # Show the text labels of the buttons
+        for btn in [self.btn_0, self.btn_1, self.btn_2, self.btn_3, self.btn_4, self.btn_5]:
+            original_text = btn.property("original_text")
+            if original_text:
+                btn.setText(original_text)
+
+        self.update_sidebar_size()
+
+    def toggle_menu(self):
+        if self.menu_visible:
+            self.hide_buttons()
+        else:
+            self.show_buttons()
+
+        # Toggle the menu visibility state
+        self.menu_visible = not self.menu_visible
+
+    def update_sidebar_size(self):
+        self.secondary_layout.setStretch(0, 2)
+
     # --------------------------------------------------------------------- #
     # Pages
 
     def theme(self):
-        self.theme_btn.setIcon(QtGui.QIcon(
+        self.theme_btn.setIcon(QIcon(
             get_icon_path().get("base") + f'{self.view.presenter.model.config_model.theme}.svg'))
         if self.view.presenter.model.config_model.theme == "light":
             self.view.presenter.model.config_model.theme = "dark"
