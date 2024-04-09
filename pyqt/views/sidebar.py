@@ -133,8 +133,14 @@ class Sidebar(QWidget):
         for btn in [self.btn_0, self.btn_1, self.btn_2, self.btn_3, self.btn_4, self.btn_5]:
             btn.setStyleSheet('')
 
+        style = 'padding: 5px;' if not self.menu_visible else 'padding: 10px 20px;'
         # Highlight it
-        button.setStyleSheet('background-color: #00ccff;;')
+        self.set_button_style(
+            'padding: 5px;' if not self.menu_visible else 'padding: 10px 20px;')
+        button.setStyleSheet(f'background-color: #00ccff;{style};')
+
+    def get_buttons(self):
+        return [self.btn_0, self.btn_1, self.btn_2, self.btn_3, self.btn_4, self.btn_5]
 
     def hide_buttons(self):
         # Hide only the text labels of the buttons
@@ -149,7 +155,7 @@ class Sidebar(QWidget):
 
     def show_buttons(self):
         # Show the text labels of the buttons
-        for btn in [self.btn_0, self.btn_1, self.btn_2, self.btn_3, self.btn_4, self.btn_5]:
+        for btn in self.get_buttons():
             original_text = btn.property("original_text")
             if original_text:
                 btn.setText(original_text)
@@ -167,6 +173,13 @@ class Sidebar(QWidget):
 
     def update_sidebar_size(self):
         self.secondary_layout.setStretch(0, 2)
+        self.set_button_style(
+            'padding: 5px;' if self.menu_visible else 'padding: 10px 20px;')
+
+    def set_button_style(self, style):
+        # Apply the common style to all buttons
+        for btn in self.get_buttons():
+            btn.setStyleSheet(style)
 
     # --------------------------------------------------------------------- #
     # Pages
@@ -180,6 +193,7 @@ class Sidebar(QWidget):
             self.view.presenter.model.config_model.theme = "light"
         self.view.theme.set_theme(
             self.view.presenter.model.config_model.theme)
+
         return
 
     def home(self):
@@ -188,15 +202,11 @@ class Sidebar(QWidget):
         main_layout.addStretch(5)
         main = QWidget()
         main.setLayout(main_layout)
+
         return main
 
     def predict(self):
-        main_layout = QVBoxLayout()
-        main_layout.addWidget(QLabel('page 1'))
-        main_layout.addStretch(5)
-        main = QWidget()
-        main.setLayout(main_layout)
-        return main
+        return self.view.predict
 
     def report(self):
         return self.view.csv_view

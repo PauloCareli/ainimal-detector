@@ -50,5 +50,6 @@ def label_all_videos(path: str = VIDEOS_DIR) -> None:
         label_video(name, detector=detector)
 
 
-label_video(name='06070175.mp4')
-# label_all_videos()
+if __name__ == "__main__":
+    # label_video(name='06070175.mp4')
+    label_all_videos()

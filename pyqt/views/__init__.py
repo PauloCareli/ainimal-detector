@@ -6,6 +6,7 @@ from .config import ConfigView
 from .main import MainWindow
 from .title_bar import TitleBar
 from .sidebar import Sidebar
+from .predict import PredictView
 from .csv_viewer import CSVView
 from .about import AboutView
 
@@ -26,6 +27,7 @@ class View:
 
         # Second box
         self.image_view = ImageView(self)
+        self.predict = PredictView(self)
         self.csv_view = CSVView(self)
 
         # Third box

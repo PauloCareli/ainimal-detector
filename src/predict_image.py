@@ -43,5 +43,6 @@ def label_all_images(path: str = IMAGES_DIR) -> None:
         label_image(name, detector=detector)
 
 
-label_image(name='04230011.JPG')
-# label_all_images()
+if __name__ == "__main__":
+    # label_image(name='jaguar3.jpg')
+    label_all_images()
