@@ -2,16 +2,36 @@ from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtCore import Qt
 from PyQt5 import QtGui
 
+from utils.paths import get_icon_path
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setWindowFlags(Qt.FramelessWindowHint)
+        self.init_ui()
+
+    def init_ui(self):
+
+        self.set_task_bar_icon()
+
         self.setMouseTracking(True)
         self.setMinimumSize(960, 600)
         self.edge_thickness = 10
         self.pressing = False
         self.curPos = None
+
+    def set_task_bar_icon(self):
+        # Set window icon using a PNG file
+        self.setWindowIcon(QtGui.QIcon(get_icon_path().get("taskbar")))
+
+        try:  # Try to set the Icon if the OS is Windows
+            import ctypes
+
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+                'company.app.1')
+        except:
+            pass
 
     def mousePressEvent(self, event):
         self.pressing = True

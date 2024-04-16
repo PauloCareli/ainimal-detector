@@ -27,7 +27,7 @@ class PredictView(QWidget):
         # self.layout = QVBoxLayout(self)
         # self.layout.addWidget(self.about_label)
         # self.layout.addStretch()  # Add stretch to fill remaining space
-
+        self.ai_models = []
         self.init_ui()
 
     def init_ui(self):
@@ -47,7 +47,8 @@ class PredictView(QWidget):
         self.model_combo_box = QComboBox(self)
         self.model_combo_box.setGeometry(50, 50, 150, button_height)
         # Add your model names here
-        self.model_combo_box.addItems(['Model A', 'Model B', 'Model C'])
+        self.model_combo_box.addItems(
+            [model.name for model in self.ai_models] if self.ai_models else [])
         self.model_combo_box.currentIndexChanged.connect(
             self.update_model_label)
 
@@ -112,6 +113,11 @@ class PredictView(QWidget):
         selected_model = self.model_combo_box.currentText()
         self.model_description_label.setText(
             f"Model selected: {selected_model}")
+
+    def update_models(self):
+        self.model_combo_box.clear()
+        self.model_combo_box.addItems(
+            [model.name for model in self.ai_models] if self.ai_models else [])
 
     def update_output_path(self):
         folder_path = self.path_line_edit.text()

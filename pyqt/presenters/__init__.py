@@ -3,6 +3,7 @@ from PyQt5 import QtGui
 from utils.paths import get_icon_path
 
 from .image import ImagePresenter
+from .model import ModelPresenter
 
 
 class Presenter:
@@ -12,6 +13,7 @@ class Presenter:
         self.view.presenter = self
 
         self.image_presenter = ImagePresenter(model, view)
+        self.model_presenter = ModelPresenter(model, view)
 
         self.on_load_app()
 
@@ -25,7 +27,6 @@ class Presenter:
                 f"{presenter.__class__.__name__} has no method {method_name}")
 
     def on_folder_selected(self, folder_path):
-        print('chegou aqui 1')
         self.delegate_to_presenter(
             self.image_presenter, 'on_folder_selected', folder_path)
 
@@ -43,3 +44,7 @@ class Presenter:
             get_icon_path().get("base") + f'{"dark" if current_theme == "light" else "dark"}.svg'))
         self.view.theme.set_theme(
             self.model.config_model.theme)
+
+    def load_ai_models(self):
+        self.delegate_to_presenter(
+            self.model_presenter, 'load_ai_models')

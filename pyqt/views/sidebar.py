@@ -44,6 +44,7 @@ class Sidebar(QWidget):
         # Second box
         self.btn_0.clicked.connect(lambda: self.on_button_click(self.btn_0, 0))
         self.btn_1.clicked.connect(lambda: self.on_button_click(self.btn_1, 1))
+        self.btn_1.clicked.connect(lambda: self.load_models())
         self.btn_2.clicked.connect(lambda: self.on_button_click(self.btn_2, 2))
         self.btn_3.clicked.connect(lambda: self.on_button_click(self.btn_3, 3))
 
@@ -60,6 +61,14 @@ class Sidebar(QWidget):
         self.tab5 = self.about()
 
         self.initUI()
+
+    def load_models(self):
+        if "presenter" in dir(self.view):
+            attributes_and_methods = dir(self.view)
+            print(attributes_and_methods)
+            # self.ai_models = self.model.load_ai_models()
+            print(dir(self.view.presenter))
+            self.ai_models = self.view.presenter.load_ai_models()
 
     def initUI(self):
         left_layout = QVBoxLayout()
@@ -198,7 +207,7 @@ class Sidebar(QWidget):
 
     def home(self):
         main_layout = QVBoxLayout()
-        main_layout.addWidget(QLabel('Home Page'))
+        main_layout.addWidget(QLabel('Welcome to AInimal detector!'))
         main_layout.addStretch(5)
         main = QWidget()
         main.setLayout(main_layout)

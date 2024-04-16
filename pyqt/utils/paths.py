@@ -23,4 +23,5 @@ def get_icon_path():
         "image": base + "image.png",
         "settings": base + "settings.svg",
         "about": base + "about.png",
+        "taskbar": base + "taskbar.png"
     }
