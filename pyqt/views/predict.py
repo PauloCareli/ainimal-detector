@@ -28,6 +28,8 @@ class PredictView(QWidget):
         # self.layout.addWidget(self.about_label)
         # self.layout.addStretch()  # Add stretch to fill remaining space
         self.ai_models = []
+        self.model = None
+
         self.init_ui()
 
     def init_ui(self):
@@ -113,11 +115,19 @@ class PredictView(QWidget):
         selected_model = self.model_combo_box.currentText()
         self.model_description_label.setText(
             f"Model selected: {selected_model}")
+        self.set_current_model(selected_model)
 
     def update_models(self):
         self.model_combo_box.clear()
         self.model_combo_box.addItems(
             [model.name for model in self.ai_models] if self.ai_models else [])
+
+    def set_current_model(self, name):
+        self.model = self.find_instance_by_name(name)
+
+    def find_instance_by_name(self, name):
+        # Function to find instances with specific attribute value
+        return [instance for instance in self.ai_models if getattr(instance, "name") == name]
 
     def update_output_path(self):
         folder_path = self.path_line_edit.text()
@@ -147,6 +157,7 @@ class PredictView(QWidget):
             if not os.path.exists(self.output_path):
                 os.makedirs(self.output_path)
 
+            self.view_instance.presenter.predict(folder_path, self.model)
             # Perform prediction using folder_path and selected_model
             # Replace this with your actual prediction function
             QMessageBox.information(

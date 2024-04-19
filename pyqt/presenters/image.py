@@ -7,7 +7,6 @@ class ImagePresenter:
     def __init__(self, model, view):
         self.model = model
         self.view = view
-        self.view.presenter = self
 
     def on_folder_selected(self, folder_path):
         self.model.image_model.folder_path = folder_path

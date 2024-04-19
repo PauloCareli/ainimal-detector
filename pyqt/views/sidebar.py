@@ -62,14 +62,6 @@ class Sidebar(QWidget):
 
         self.initUI()
 
-    def load_models(self):
-        if "presenter" in dir(self.view):
-            attributes_and_methods = dir(self.view)
-            print(attributes_and_methods)
-            # self.ai_models = self.model.load_ai_models()
-            print(dir(self.view.presenter))
-            self.ai_models = self.view.presenter.load_ai_models()
-
     def initUI(self):
         left_layout = QVBoxLayout()
         left_layout_top = QVBoxLayout()
@@ -129,6 +121,16 @@ class Sidebar(QWidget):
         main_widget.setLayout(main_layout)
 
         self.window.setCentralWidget(main_widget)
+
+        self.highlight_button(self.btn_0)
+
+    def load_models(self):
+        if "presenter" in dir(self.view):
+            attributes_and_methods = dir(self.view)
+            print(attributes_and_methods)
+            # self.ai_models = self.model.load_ai_models()
+            print(dir(self.view.presenter))
+            self.ai_models = self.view.presenter.load_ai_models()
 
     # --------------------------------------------------------------------- #
     # Sidebar Methods
@@ -195,13 +197,13 @@ class Sidebar(QWidget):
 
     def theme(self):
         self.theme_btn.setIcon(QIcon(
-            get_icon_path().get("base") + f'{self.view.presenter.model.config_model.theme}.svg'))
-        if self.view.presenter.model.config_model.theme == "light":
-            self.view.presenter.model.config_model.theme = "dark"
+            get_icon_path().get("base") + f'{self.view.presenter.model.settings_model.theme}.svg'))
+        if self.view.presenter.model.settings_model.theme == "light":
+            self.view.presenter.model.settings_model.theme = "dark"
         else:
-            self.view.presenter.model.config_model.theme = "light"
+            self.view.presenter.model.settings_model.theme = "light"
         self.view.theme.set_theme(
-            self.view.presenter.model.config_model.theme)
+            self.view.presenter.model.settings_model.theme)
 
         return
 

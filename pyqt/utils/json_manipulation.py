@@ -3,7 +3,7 @@ import os
 from typing import Any, Dict, List, Optional
 
 
-def load_ai_models_from_json(json_file_path: str) -> List[Dict[str, Any]]:
+def load_json(json_file_path: str) -> List[Dict[str, Any]]:
     """
     Load AI model data from a JSON file.
 
@@ -13,9 +13,13 @@ def load_ai_models_from_json(json_file_path: str) -> List[Dict[str, Any]]:
     Returns:
         List[Dict[str, Any]]: A list of dictionaries representing AI model data.
     """
-    with open(json_file_path, 'r') as file:
-        data = json.load(file)
-    return data
+    try:
+        with open(json_file_path, 'r') as file:
+            data = json.load(file)
+
+        return data
+    except:
+        return {}
 
 
 def save_ai_models_to_json(data: List[Dict[str, Any]], json_file_path: Optional[str] = None) -> None:
