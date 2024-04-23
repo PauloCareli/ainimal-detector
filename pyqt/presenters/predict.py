@@ -1,8 +1,10 @@
 from PyQt5.QtGui import QPixmap, QImage
 import os
 import cv2
+from object_detector import ObjectDetector
 
 from predict_image import label_all_images
+from predict_video import label_all_videos
 
 
 class PredictPresenter:
@@ -16,10 +18,12 @@ class PredictPresenter:
         self.view.image_view.load_folder_contents(folder_contents)
 
     def predict(self, folder_path, model):
-        print(folder_path)
-        print(model)
-        label_all_images(folder_path)
-        pass
+        detector = ObjectDetector(model_path=model.path)
+        label_all_images(
+            folder_path, self.model.settings_model.media_output_path, detector)
+        # label_all_videos(folder_path)
+
+        return self.model.settings_model.media_output_path
 
     # def find_content(self, folder_path):
         #     self.view.image_view.progress_bar.setVisible(True)

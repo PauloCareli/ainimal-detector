@@ -38,7 +38,6 @@ class Presenter:
                 f"{presenter.__class__.__name__} has no method {method_name}")
 
     def on_folder_selected(self, folder_path):
-        print('aqui01')
         self.delegate_to_presenter(
             self.image_presenter, 'on_folder_selected', folder_path)
 
@@ -57,5 +56,5 @@ class Presenter:
 
     # Predict
     def predict(self, file_path, model):
-        self.delegate_to_presenter(
+        return self.delegate_to_presenter(
             self.predict_presenter, 'predict', file_path, model)

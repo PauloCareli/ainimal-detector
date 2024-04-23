@@ -22,7 +22,7 @@ def load_json(json_file_path: str) -> List[Dict[str, Any]]:
         return {}
 
 
-def save_ai_models_to_json(data: List[Dict[str, Any]], json_file_path: Optional[str] = None) -> None:
+def save_json(data: List[Dict[str, Any]], path: str = ".", json_file_path: Optional[str] = None) -> None:
     """
     Save AI model data to a JSON file.
 
@@ -36,7 +36,7 @@ def save_ai_models_to_json(data: List[Dict[str, Any]], json_file_path: Optional[
     """
     if json_file_path is None:
         # Default to the root of the project directory
-        json_file_path = os.path.join(os.getcwd(), 'pyqt/ai_models.json')
+        json_file_path = os.path.join(os.getcwd(), path)
 
     # Save AIModel data to the specified JSON file
     with open(json_file_path, 'w') as file:
@@ -47,4 +47,6 @@ def save_ai_models_to_json(data: List[Dict[str, Any]], json_file_path: Optional[
 
 if __name__ == "__main__":
     from model_jsons import ai_models_data
-    save_ai_models_to_json(ai_models_data)
+    save_json(ai_models_data, path='pyqt/ai_models.json')
+    from settings_json import settings_data
+    save_json(settings_data, path='pyqt/settings.json')

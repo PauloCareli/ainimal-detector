@@ -3,7 +3,7 @@ class SettingModel:
     def __init__(self):
         # Add configuration-related properties and methods as needed
         self.theme = "light"
-        self.media_output_path = "pyqt/output"
+        self.media_output_path = "/output"
         self.report = "pyqt/reports"
         self.recursive_folder_search = False
 

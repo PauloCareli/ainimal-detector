@@ -126,8 +126,10 @@ class PredictView(QWidget):
         self.model = self.find_instance_by_name(name)
 
     def find_instance_by_name(self, name):
+        if not self.ai_models:
+            return []
         # Function to find instances with specific attribute value
-        return [instance for instance in self.ai_models if getattr(instance, "name") == name]
+        return [instance for instance in self.ai_models if getattr(instance, "name") == name][0]
 
     def update_output_path(self):
         folder_path = self.path_line_edit.text()
@@ -157,14 +159,19 @@ class PredictView(QWidget):
             if not os.path.exists(self.output_path):
                 os.makedirs(self.output_path)
 
-            self.view_instance.presenter.predict(folder_path, self.model)
+            output_path = self.view_instance.presenter.predict(
+                folder_path, self.model)
             # Perform prediction using folder_path and selected_model
             # Replace this with your actual prediction function
             QMessageBox.information(
                 self, "Prediction", f"Predicting using {selected_model} on folder: {folder_path}")
 
+            # Get the absolute path of the current script
+            project_root = os.getcwd()
+
+            output_folder_path = os.path.join(project_root, output_path)
             # Open the output path using the system's default file manager
-            QDesktopServices.openUrl(QUrl.fromLocalFile(self.output_path))
+            QDesktopServices.openUrl(QUrl.fromLocalFile(output_folder_path))
 
         else:
             QMessageBox.warning(

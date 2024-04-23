@@ -115,7 +115,7 @@ class ImageView(QWidget):
                 row_count += 1
 
             row_layout.addLayout(item_layout)
-            print(dir(self.view_instance))
+
             if row_layout.count() >= self.view_instance.presenter.model.image_model.max_items_per_row:
                 row_layout = None
 

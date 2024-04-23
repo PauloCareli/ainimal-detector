@@ -2,17 +2,15 @@ import cv2
 
 from ultralytics import YOLO
 
-from paths import MODEL_PATH
-
 
 class ObjectDetector:
-    def __init__(self, result=None):
+    def __init__(self, result=None, model_path='yolov8n.pt'):
         if result:
             self.result = result
             self.x1, self.y1, self.x2, self.y2, self.score, self.class_id = result
         self.threshold = 0.5
         # self.model = YOLO("yolov8n.pt")  # pre trained by yolo
-        self.model = YOLO(MODEL_PATH)
+        self.model = YOLO(model_path)
         # self.class_dict = self.model.names
 
     def set_model(self, model):

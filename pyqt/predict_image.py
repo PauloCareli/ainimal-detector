@@ -1,16 +1,19 @@
 import os
 import cv2
 
-from paths import IMAGES_DIR, LABELED_IMAGES_DIR
 from object_detector import ObjectDetector
 
 
-def label_image(name: str, detector: ObjectDetector = ObjectDetector()) -> None:
-    image_path = os.path.join(IMAGES_DIR, name)
-    image_path_out = os.path.join(LABELED_IMAGES_DIR, name)
+def label_image(name: str,
+                folder_path,
+                folder_path_output="/output",
+                detector: ObjectDetector = ObjectDetector()
+                ) -> None:
+    image_path = os.path.join(folder_path, name)
+    image_path_out = os.path.join(folder_path_output, name)
 
     # Ensure the output directory exists
-    os.makedirs(LABELED_IMAGES_DIR, exist_ok=True)
+    os.makedirs(folder_path_output, exist_ok=True)
 
     img = cv2.imread(image_path)
 
@@ -29,18 +32,26 @@ def label_image(name: str, detector: ObjectDetector = ObjectDetector()) -> None:
     return 'Image saved on ' + image_path_out
 
 
-def label_multiple_images(names: list[str]) -> None:
-    detector = ObjectDetector()
+def label_multiple_images(names: list[str],
+                          folder_path,
+                          folder_path_output="/output",
+                          detector: ObjectDetector = ObjectDetector()) -> None:
     for name in names:
-        label_image(name=name, detector=detector)
+        label_image(name=name, detector=detector, folder_path=folder_path,
+                    folder_path_output=folder_path_output)
 
 
-def label_all_images(path: str = IMAGES_DIR) -> None:
-    detector = ObjectDetector()
-    image_names = [f for f in os.listdir(path) if f.lower().endswith(
+def label_all_images(folder_path: str,
+                     folder_path_output: str = "/output",
+                     detector: ObjectDetector = ObjectDetector()
+                     ) -> None:
+
+    image_names = [f for f in os.listdir(folder_path) if f.lower().endswith(
         ('.png', '.jpg', '.jpeg', '.gif', ".JPG"))]
+    print('foundimages')
     for name in image_names:
-        label_image(name, detector=detector)
+        label_image(name, detector=detector,  folder_path=folder_path,
+                    folder_path_output=folder_path_output)
 
 
 if __name__ == "__main__":

@@ -1,8 +1,8 @@
 [
     {
-        "name": "Model A",
-        "path": "pyqt/models",
-        "description": "This is Model A for classification.",
+        "name": "Camera Trap",
+        "path": "D:/PH/Coding/Animal detection AI/runs/detect/train57/weights/best.pt",
+        "description": "This model focus on detecting dogs and cats from camera traps",
         "accuracy": 0.85,
         "threshold": 0.7
     },
@@ -14,9 +14,9 @@
         "threshold": 0.65
     },
     {
-        "name": "Model C",
-        "path": "pyqt/models",
-        "description": "This is Model C for sentiment analysis.",
+        "name": "Yolo",
+        "path": "yolov8n.pt",
+        "description": "This is a standard YOLO built-in model.",
         "accuracy": 0.78,
         "threshold": 0.75
     }

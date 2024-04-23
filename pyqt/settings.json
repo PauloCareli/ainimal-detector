@@ -1,0 +1,7 @@
+{
+    "theme": "light",
+    "media_output_path": "pyqt/output",
+    "report": "pyqt/reports",
+    "recursive_folder_search": false,
+    "threshold": 0.7
+}

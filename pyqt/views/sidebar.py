@@ -127,9 +127,7 @@ class Sidebar(QWidget):
     def load_models(self):
         if "presenter" in dir(self.view):
             attributes_and_methods = dir(self.view)
-            print(attributes_and_methods)
             # self.ai_models = self.model.load_ai_models()
-            print(dir(self.view.presenter))
             self.ai_models = self.view.presenter.load_ai_models()
 
     # --------------------------------------------------------------------- #
