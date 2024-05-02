@@ -11,6 +11,11 @@ def get_classes():
     return classes
 
 
+def get_classes_from_model(model):
+
+    return model.names
+
+
 def get_class_dict(by_name=False):
     if by_name:
         return {cls: idx for idx, cls in enumerate(get_classes())}
