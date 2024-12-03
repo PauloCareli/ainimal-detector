@@ -2,7 +2,7 @@
 
 ## Overview
 
-AInimal Detector is an innovative project that employs deep learning with YOLO (You Only Look Once) to effectively detect animals in images and videos. Specifically designed to support researchers in fields requiring animal detection, such as camera traps, this project is actively contributing to a Master's project at UFJF (Universidade Federal de Juiz de Fora).
+AInimal Detector is an innovative project that employs deep learning with YOLO (You Only Look Once) to effectively detect animals in images and videos. Specifically designed to support researchers in fields like wildlife monitoring and conservation, it is particularly useful for analyzing data from camera traps. This project is actively contributing to a Master's project at UFJF (Universidade Federal de Juiz de Fora).
 
 ![Welcome - Light theme](pyqt/assets/welcome_light.png)
 
