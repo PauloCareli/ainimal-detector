@@ -4,12 +4,19 @@
 
 AInimal Detector is an innovative project that employs deep learning with YOLO (You Only Look Once) to effectively detect animals in images and videos. Specifically designed to support researchers in fields requiring animal detection, such as camera traps, this project is actively contributing to a Master's project at UFJF (Universidade Federal de Juiz de Fora).
 
+![Welcome - Light theme](pyqt/assets/welcome_light.png)
+
 ## Features
 
 - **Animal Detection:** Utilizes YOLO to accurately identify and locate animals in images and videos.
 - **User Interface:** Built with PyQt, providing an intuitive and interactive experience for users.
 - **Multi-platform Support:** Compatible with various platforms, ensuring accessibility for a broad audience.
 - **Easy Integration:** Simple and straightforward integration with your existing workflow.
+
+![Predict page - Light theme](pyqt/assets/predict.png)
+
+> **Description:** This is a screenshot of the Predict page in the light theme. It shows the user interface for making predictions with the AInimal Detector.
+
 
 ## Requirements
 
@@ -57,7 +64,14 @@ or you can run the AInimal Detector application with:
 ## Configuration
 Modify the configuration parameters in the config.py file to tailor the application to your specific needs.
 
+## Themes
+
 ## License
+This project is licensed under the terms of the **GNU General Public License v3.0**.
+
+You can find the full text of the license in the [LICENSE](./LICENSE) file.
+
+For more details on the terms and conditions, see the [GNU General Public License](https://www.gnu.org/licenses/gpl-3.0.html).
 
 ## Acknowledgments
 - YOLO (You Only Look Once): YOLO Website
