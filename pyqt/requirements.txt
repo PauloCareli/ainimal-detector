@@ -1,0 +1,7 @@
+opencv_python==4.10.0.84
+opencv_python==4.8.1.78
+pandas==1.5.0
+PyQt5==5.15.11
+PyQt5_sip==12.15.0
+ultralytics==8.3.40
+ultralytics==8.0.20
