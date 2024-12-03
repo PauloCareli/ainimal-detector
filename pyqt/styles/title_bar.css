@@ -15,7 +15,6 @@ QToolButton {
     border-radius: 6px;
     padding: 5px 5px;
     border: 2px solid #000;
-    transition: background-color 0.3s ease;
     
 }
 

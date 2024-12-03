@@ -3,8 +3,11 @@ images/
 videos/
 datasets/
 OID/
+image_extraction/
 runs/
 src/__pycache__
+pyqt/output/
+pyqt/__pycache__
 pyqt/models/__pycache__
 pyqt/presenters/__pycache__
 pyqt/views/__pycache__

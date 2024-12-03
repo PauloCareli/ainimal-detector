@@ -25,3 +25,12 @@ def get_icon_path():
         "about": base + "about.png",
         "taskbar": base + "taskbar.png"
     }
+
+
+def get_image_path():
+    base = "pyqt/images/"
+
+    return {
+        "base": base,
+        "welcome": base + "welcome.png"
+    }

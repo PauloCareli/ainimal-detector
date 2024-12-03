@@ -21,7 +21,7 @@ class ConfigView(QWidget):
 
         self.view_instance = view_instance
 
-        self.label = QLabel("Content of Tab 2")
+        self.label = QLabel("Settings Page. Coming soon...")
         self.layout = QVBoxLayout(self)
         self.layout.addWidget(self.label)
         self.layout.addStretch()  # Add stretch to fill remaining space

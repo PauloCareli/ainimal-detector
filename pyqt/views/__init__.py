@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow
 
 
+from .home import HomeView
 from .image import ImageView
 from .config import ConfigView
 from .main import MainWindow
@@ -26,6 +27,7 @@ class View:
         self.theme = Theme(self)
 
         # Second box
+        self.home_view = HomeView(self)
         self.image_view = ImageView(self)
         self.predict = PredictView(self)
         self.csv_view = CSVView(self)

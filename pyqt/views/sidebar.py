@@ -206,13 +206,7 @@ class Sidebar(QWidget):
         return
 
     def home(self):
-        main_layout = QVBoxLayout()
-        main_layout.addWidget(QLabel('Welcome to AInimal detector!'))
-        main_layout.addStretch(5)
-        main = QWidget()
-        main.setLayout(main_layout)
-
-        return main
+        return self.view.home_view
 
     def predict(self):
         return self.view.predict
