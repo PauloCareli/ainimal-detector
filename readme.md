@@ -47,9 +47,9 @@ AInimal Detector is an innovative project that employs deep learning with YOLO (
 
 Then, run the following command:
 
-```bash
+   ```bash
    pip install -r requirements.txt
-```
+   ```
 
 ## Usage
 
@@ -65,6 +65,23 @@ or you can run the AInimal Detector application with:
 Modify the configuration parameters in the config.py file to tailor the application to your specific needs.
 
 ## Themes
+
+The application supports multiple themes to improve user experience. You can switch between the **Light** and **Dark** themes to suit your preference.
+
+### Light Theme
+
+The **Light theme** provides a bright and clean interface, ideal for well-lit environments.
+
+![Light Theme](pyqt/assets/welcome_light.png)
+
+### Dark Theme
+
+The **Dark theme** offers a darker, more subdued interface, making it easier on the eyes in low-light conditions.
+
+![Dark Theme](pyqt/assets/welcome_dark.png)
+
+To switch between themes, simply click on the sun/moon icon.
+
 
 ## License
 This project is licensed under the terms of the **GNU General Public License v3.0**.
