@@ -28,7 +28,7 @@ def get_icon_path():
 
 
 def get_image_path():
-    base = "pyqt/images/"
+    base = "pyqt/assets/images"
 
     return {
         "base": base,
