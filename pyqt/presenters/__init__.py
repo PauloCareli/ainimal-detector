@@ -22,13 +22,14 @@ class Presenter:
         self.on_load_app()
 
     def on_load_app(self):
+        # Load settings first to get the correct theme from JSON
+        self.model.load_settings()
+
+        # Now get the theme and apply it
         current_theme = self.model.settings_model.theme
         self.view.sidebar.theme_btn.setIcon(QtGui.QIcon(
             get_icon_path().get("base") + f'{"dark" if current_theme == "light" else "dark"}.svg'))
-        self.view.theme.set_theme(
-            self.model.settings_model.theme)
-
-        self.model.load_settings()
+        self.view.theme.set_theme(current_theme)
 
     def delegate_to_presenter(self, presenter, method_name, *args, **kwargs):
         # Generic method to delegate a call to a specific presenter and method

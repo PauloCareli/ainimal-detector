@@ -5,6 +5,7 @@ from object_detector import ObjectDetector
 
 from predict_image import label_all_images
 from predict_video import label_all_videos
+from utils.csv_logger import DetectionCSVLogger
 
 
 class PredictPresenter:
@@ -17,13 +18,39 @@ class PredictPresenter:
         folder_contents = self.load_folder_contents(folder_path)
         self.view.image_view.load_folder_contents(folder_contents)
 
-    def predict(self, folder_path, model):
+    def predict(self, folder_path, model, progress_callback=None):
+        """
+        Run prediction on folder with optional CSV logging
+        """
         detector = ObjectDetector(model_path=model.path)
-        label_all_images(
-            folder_path, self.model.settings_model.media_output_path, detector)
+        detector.set_threshold(self.model.settings_model.threshold)
+
+        # Initialize CSV logger if enabled
+        # Always create CSV logger since CSV logging is now always enabled
+        csv_output_path = getattr(
+            self.model.settings_model, 'report_output_path', 'pyqt/reports')
+        csv_logger = DetectionCSVLogger(
+            output_directory=csv_output_path,
+            model_name=model.name
+        )
+
+        # Process images with CSV logging
+        results = label_all_images(
+            folder_path=folder_path,
+            folder_path_output=self.model.settings_model.media_output_path,
+            detector=detector,
+            csv_logger=csv_logger,
+            progress_callback=progress_callback
+        )
+
+        # TODO: Add video processing
         # label_all_videos(folder_path)
 
-        return self.model.settings_model.media_output_path
+        return {
+            'output_path': self.model.settings_model.media_output_path,
+            'csv_paths': results.get('csv_paths'),
+            'summary': results
+        }
 
     # def find_content(self, folder_path):
         #     self.view.image_view.progress_bar.setVisible(True)

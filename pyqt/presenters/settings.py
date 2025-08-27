@@ -1,8 +1,8 @@
 try:
-    from PyQt5.QtWidgets import QMessageBox
+    from utils.custom_modal import ModalManager
 except ImportError:
-    # Fallback in case PyQt5 is not available during linting
-    QMessageBox = None
+    # Fallback in case module is not available during linting
+    ModalManager = None
 
 
 class SettingsPresenter:
@@ -37,32 +37,22 @@ class SettingsPresenter:
                     self.apply_theme_change(new_theme)
 
                 # Show success message
-                if QMessageBox:
-                    msg = QMessageBox()
-                    msg.setIcon(QMessageBox.Information)
-                    msg.setWindowTitle("Settings Saved")
-                    msg.setText("Settings have been saved successfully!")
-                    msg.exec_()
+                if ModalManager:
+                    ModalManager.show_success(
+                        "Settings Saved", "Settings have been saved successfully!", self.view.window)
 
                 print("Settings saved and applied successfully")
 
-            elif QMessageBox:
+            elif ModalManager:
                 # Show error message
-                msg = QMessageBox()
-                msg.setIcon(QMessageBox.Warning)
-                msg.setWindowTitle("Save Failed")
-                msg.setText("Failed to save settings. Please try again.")
-                msg.exec_()
+                ModalManager.show_error(
+                    "Save Failed", "Failed to save settings. Please try again.", "", self.view.window)
 
         except (ValueError, KeyError, FileNotFoundError) as e:
             # Show error message for specific exceptions
-            if QMessageBox:
-                msg = QMessageBox()
-                msg.setIcon(QMessageBox.Critical)
-                msg.setWindowTitle("Error")
-                msg.setText(
-                    f"An error occurred while saving settings:\n{str(e)}")
-                msg.exec_()
+            if ModalManager:
+                ModalManager.show_error(
+                    "Error", f"An error occurred while saving settings:\n{str(e)}", "", self.view.window)
             print(f"Settings save error: {e}")
 
     def apply_theme_change(self, new_theme):

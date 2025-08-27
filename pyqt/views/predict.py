@@ -1,12 +1,11 @@
 import os
-import sys
-from PyQt5.QtWidgets import (
-    QProgressBar, QTableWidget, QPushButton, QFileDialog, QLineEdit,
-    QLabel, QVBoxLayout, QWidget, QHBoxLayout, QComboBox, QMessageBox,
-    QGroupBox, QGridLayout, QScrollArea, QDialog, QTextEdit, QFrame
-)
-from PyQt5.QtCore import QUrl, Qt
+
+from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtGui import QDesktopServices, QFont
+from PyQt5.QtWidgets import (QComboBox, QDialog, QFileDialog, QGridLayout,
+                             QGroupBox, QHBoxLayout, QLabel, QLineEdit,
+                             QMessageBox, QProgressBar, QPushButton,
+                             QScrollArea, QTextEdit, QVBoxLayout, QWidget)
 
 
 class PredictView(QWidget):
@@ -136,7 +135,7 @@ class PredictView(QWidget):
         # Browse button
         self.select_folder_button = QPushButton("Browse")
         self.select_folder_button.setToolTip(
-            "Click to select a folder using file dialog")
+            "Click to select a folder containing images/videos\nYou can see files inside folders before selecting")
         self.select_folder_button.clicked.connect(self.select_folder)
         self.style_button(self.select_folder_button, "secondary")
         layout.addWidget(self.select_folder_button, 0, 2)
@@ -186,7 +185,7 @@ class PredictView(QWidget):
         self.predict_button.setToolTip(
             "Start AI prediction on the selected folder\nResults will be saved and opened automatically")
         self.predict_button.clicked.connect(self.predict)
-        self.style_button(self.predict_button, "primary")
+        self.style_button(self.predict_button, "secondary")
         self.action_buttons_layout.addWidget(self.predict_button)
 
     def update_model_label(self):
@@ -237,11 +236,45 @@ class PredictView(QWidget):
         dialog.exec_()
 
     def select_folder(self):
-        folder_path = QFileDialog.getExistingDirectory(
-            self, "Select Directory")
-        if folder_path:
-            self.path_line_edit.setText(folder_path)
-            self.update_output_path()
+        """Open folder browser that shows files inside folders"""
+        # Create a custom file dialog that shows files and allows folder selection
+        dialog = QFileDialog(self)
+        dialog.setWindowTitle("Select Folder with Images/Videos")
+        dialog.setFileMode(QFileDialog.Directory)
+        dialog.setOption(QFileDialog.ShowDirsOnly, False)  # Show files too
+        dialog.setOption(QFileDialog.DontUseNativeDialog,
+                         True)  # Use Qt dialog to show files
+
+        # Set file filters to highlight supported media files
+        filters = [
+            "All Files (*)",
+            "Images (*.jpg *.jpeg *.png *.bmp *.gif *.tiff *.webp)",
+            "Videos (*.mp4 *.avi *.mov *.mkv *.wmv *.flv *.webm)",
+            "Images and Videos (*.jpg *.jpeg *.png *.bmp *.gif *.tiff *.webp *.mp4 *.avi *.mov *.mkv *.wmv *.flv *.webm)"
+        ]
+        dialog.setNameFilters(filters)
+        dialog.selectNameFilter(
+            "Images and Videos (*.jpg *.jpeg *.png *.bmp *.gif *.tiff *.webp *.mp4 *.avi *.mov *.mkv *.wmv *.flv *.webm)")
+
+        # Set initial directory if we have one
+        current_path = self.path_line_edit.text()
+        if current_path and os.path.exists(current_path):
+            dialog.setDirectory(current_path)
+
+        # Show the dialog
+        if dialog.exec_() == QFileDialog.Accepted:
+            selected_paths = dialog.selectedFiles()
+            if selected_paths:
+                selected_path = selected_paths[0]
+
+                # If a file was selected, get its parent directory
+                if os.path.isfile(selected_path):
+                    folder_path = os.path.dirname(selected_path)
+                else:
+                    folder_path = selected_path
+
+                self.path_line_edit.setText(folder_path)
+                self.update_output_path()
 
     def predict(self):
         """Start the prediction process"""
@@ -267,33 +300,68 @@ class PredictView(QWidget):
         try:
             # Update progress
             self.update_progress_bar(0.1)
-            self.status_label.setText("Preparing model...")
+            self.status_label.setText("Loading model...")
+
+            # Get the selected model
+            self.set_current_model(selected_model)
+            if not self.model:
+                raise Exception("Selected model not found")
 
             # Ensure output path exists
             if not os.path.exists(self.output_path):
                 os.makedirs(self.output_path)
 
             self.update_progress_bar(0.2)
-            self.status_label.setText(
-                f"Running prediction with {selected_model}...")
+            self.status_label.setText("Processing files...")
 
-            # Perform the actual prediction
-            output_path = self.view_instance.presenter.predict(
-                folder_path, self.model)
+            # Define progress callback
+            def progress_callback(progress, message):
+                self.update_progress_bar(
+                    0.2 + (progress / 100) * 0.7)  # Scale to 20-90%
+                self.status_label.setText(message)
 
-            self.update_progress_bar(0.9)
+            # Perform the actual prediction with progress updates
+            results = self.view_instance.presenter.predict_presenter.predict(
+                folder_path, self.model, progress_callback=progress_callback)
+
+            self.update_progress_bar(0.95)
             self.status_label.setText("Finalizing results...")
+
+            # Extract results
+            output_path = results['output_path']
+            csv_paths = results.get('csv_paths')
+            summary = results['summary']
 
             # Success message
             self.update_progress_bar(1.0)
-            self.status_label.setText("Prediction completed successfully!")
+
+            # Create status message
+            status_msg = f"Prediction complete! {summary['successful_files']} files processed"
+            if summary['total_detections'] > 0:
+                status_msg += f", {summary['total_detections']} detections found"
+
+            self.status_label.setText(status_msg)
+
+            # Create detailed completion message
+            completion_msg = f"""Prediction Complete!
+
+Files Processed: {summary['total_files']}
+Successful: {summary['successful_files']}
+Failed: {summary['failed_files']}
+Total Detections: {summary['total_detections']}
+Processing Time: {summary['total_processing_time_ms']/1000:.2f} seconds
+
+Model: {selected_model}
+Input folder: {folder_path}
+Results saved to: {output_path}"""
+
+            if csv_paths:
+                completion_msg += f"\n\nCSV Files Created:"
+                completion_msg += f"\nDetections: {csv_paths.get('detections', 'N/A')}"
+                completion_msg += f"\nSummary: {csv_paths.get('summary', 'N/A')}"
 
             QMessageBox.information(
-                self, "Prediction Complete",
-                f"Prediction completed using {selected_model}.\n"
-                f"Input folder: {folder_path}\n"
-                f"Results will open automatically."
-            )
+                self, "Prediction Complete", completion_msg)
 
             # Open the output folder
             project_root = os.getcwd()
@@ -346,8 +414,8 @@ class PredictView(QWidget):
                     color: #000;
                 }
                 QPushButton:hover {
-                    background-color: #00a3cc;
-                    border-color: #007e9e;
+                    background-color: #00ccff;
+                    border-color: #00ccff;
                 }
                 QPushButton:pressed {
                     background-color: #007e9e;
@@ -365,8 +433,9 @@ class PredictView(QWidget):
                     color: #333;
                 }
                 QPushButton:hover {
-                    background-color: #e0e0e0;
-                    border-color: #999;
+                    background-color: #00ccff;
+                    color: white;
+                    border-color: #00ccff;
                 }
                 QPushButton:pressed {
                     background-color: #d0d0d0;
@@ -480,7 +549,7 @@ class PredictView(QWidget):
             self.style_input_field(self.path_line_edit)
             self.style_button(self.details_button, "secondary")
             self.style_button(self.select_folder_button, "secondary")
-            self.style_button(self.predict_button, "primary")
+            self.style_button(self.predict_button, "secondary")
         except AttributeError:
             # Some components might not be created yet
             pass

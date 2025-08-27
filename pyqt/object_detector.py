@@ -30,7 +30,9 @@ class ObjectDetector:
     #     self.class_dict = class_dict
 
     def detect(self, image):
-        return self.model(image)[0]
+        # Run YOLO detection with our confidence threshold
+        results = self.model(image, conf=self.threshold)[0]
+        return results
 
     def process_results(self, image, results):
         self.set_image(image)
@@ -42,9 +44,8 @@ class ObjectDetector:
     def draw_bounding_box(self, image=None):
         if image:
             self.set_image(image)
-        if self.score > self.threshold:
-            self.draw_rectangle()
-            self.draw_text()
+        self.draw_rectangle()
+        self.draw_text()
 
     def draw_rectangle(self):
         cv2.rectangle(self.image, (int(self.x1), int(self.y1)),

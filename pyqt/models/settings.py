@@ -3,8 +3,8 @@ class SettingModel:
     def __init__(self):
         # Add configuration-related properties and methods as needed
         self.theme = "light"
-        self.media_output_path = "/output"
-        self.report = "/reports"
+        self.media_output_path = "output"
+        self.report_output_path = "reports"
         self.recursive_folder_search = False
         self.threshold = 0.7
 
@@ -12,7 +12,8 @@ class SettingModel:
         self.theme = json_file.get("theme", self.theme)
         self.media_output_path = json_file.get(
             "media_output_path", self.media_output_path)
-        self.report = json_file.get("report", self.report)
+        self.report_output_path = json_file.get(
+            "report_output_path", json_file.get("report", self.report_output_path))  # Backward compatibility
         self.recursive_folder_search = json_file.get(
             "recursive_folder_search", self.recursive_folder_search)
         self.threshold = json_file.get("threshold", self.threshold)
@@ -22,7 +23,7 @@ class SettingModel:
         return {
             "theme": self.theme,
             "media_output_path": self.media_output_path,
-            "report": self.report,
+            "report_output_path": self.report_output_path,
             "recursive_folder_search": self.recursive_folder_search,
             "threshold": self.threshold
         }

@@ -226,6 +226,10 @@ class Sidebar(QWidget):
             # Refresh predict page styling
             self.view.predict.refresh_styling()
 
+            # Refresh about page styling
+            if hasattr(self.view, 'about_view') and self.view.about_view:
+                self.view.about_view.refresh_styling()
+
         except (AttributeError, KeyError) as e:
             print(f"Warning: Could not refresh page styling: {e}")
 

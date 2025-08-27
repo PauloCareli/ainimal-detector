@@ -262,7 +262,8 @@ class ConfigView(QWidget):
 
         self.media_output_edit.setText(
             settings.get("media_output_path", "pyqt/output"))
-        self.report_output_edit.setText(settings.get("report", "pyqt/reports"))
+        self.report_output_edit.setText(
+            settings.get("report_output_path", settings.get("report", "pyqt/reports")))  # Backward compatibility
         self.recursive_checkbox.setChecked(
             settings.get("recursive_folder_search", False))
         self.threshold_spin.setValue(settings.get("threshold", 0.7))
@@ -276,7 +277,7 @@ class ConfigView(QWidget):
         return {
             "theme": theme_value,
             "media_output_path": self.media_output_edit.text(),
-            "report": self.report_output_edit.text(),
+            "report_output_path": self.report_output_edit.text(),
             "recursive_folder_search": self.recursive_checkbox.isChecked(),
             "threshold": self.threshold_spin.value()
         }
@@ -318,8 +319,8 @@ class ConfigView(QWidget):
                     color: #000;
                 }
                 QPushButton:hover {
-                    background-color: #00a3cc;
-                    border-color: #007e9e;
+                    background-color: #00ccff;
+                    border-color: #00ccff;
                 }
                 QPushButton:pressed {
                     background-color: #007e9e;
@@ -332,8 +333,9 @@ class ConfigView(QWidget):
                     color: #333;
                 }
                 QPushButton:hover {
-                    background-color: #e0e0e0;
-                    border-color: #999;
+                    background-color: #00ccff;
+                    color: white;
+                    border-color: #00ccff;
                 }
                 QPushButton:pressed {
                     background-color: #d0d0d0;
