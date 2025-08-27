@@ -15,6 +15,9 @@ class MainWindow(QMainWindow):
 
         self.set_task_bar_icon()
 
+        # Enable tooltips to always show, even when window is not focused
+        self.setAttribute(Qt.WA_AlwaysShowToolTips, True)
+
         self.setMouseTracking(True)
         self.setMinimumSize(960, 600)
         self.edge_thickness = 10
@@ -79,6 +82,10 @@ class MainWindow(QMainWindow):
             self.setCursor(QtGui.QCursor(Qt.SizeVerCursor))
         else:
             self.setCursor(QtGui.QCursor(Qt.ArrowCursor))
+
+        # Important: Call parent implementation to allow tooltips to work
+        super().mouseMoveEvent(event)
+        event.accept()
 
     def mouseReleaseEvent(self, event):
         self.pressing = False

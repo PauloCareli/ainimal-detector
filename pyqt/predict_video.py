@@ -1,6 +1,6 @@
 import os
 import time
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
 
 import cv2
 
@@ -23,8 +23,9 @@ def label_video(name: str,
     video_path = folder_path.replace("\\", "/") + "/" + name
     video_path_out = folder_path_output.replace("\\", "/") + "/" + name
 
-    # Ensure the output directory exists
-    os.makedirs(folder_path_output, exist_ok=True)
+    # Ensure the output directory exists (including subdirectories)
+    output_dir = os.path.dirname(video_path_out)
+    os.makedirs(output_dir, exist_ok=True)
 
     start_time = time.time()
     cap = cv2.VideoCapture(video_path)
@@ -141,12 +142,6 @@ def label_video(name: str,
 
         out.write(processed_frame)
 
-        # Update progress if callback provided
-        if progress_callback:
-            progress = (frame_number / frame_count) * 100
-            progress_callback(
-                progress, f"Processing frame {frame_number}/{frame_count}...")
-
         frame_number += 1
         ret, frame = cap.read()
 
@@ -184,7 +179,8 @@ def label_all_videos(folder_path: str,
                      folder_path_output: str,
                      detector: ObjectDetector = ObjectDetector(),
                      csv_logger: Optional[DetectionCSVLogger] = None,
-                     progress_callback=None) -> Dict[str, Any]:
+                     progress_callback=None,
+                     file_list: Optional[List[str]] = None) -> Dict[str, Any]:
     """
     Process all videos in a folder and optionally log detections to CSV.
 
@@ -194,11 +190,15 @@ def label_all_videos(folder_path: str,
     start_session_time = time.time()
     session_start_timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
 
-    # Extended video formats support
-    video_names = [f for f in os.listdir(folder_path) if f.lower().endswith(
-        ('.mp4', '.avi', '.mkv', '.mov', '.wmv', '.flv', '.webm', '.m4v', '.MP4'))]
-
-    print(f'Found {len(video_names)} videos to process')
+    # Use provided file list or scan folder
+    if file_list is not None:
+        video_names = file_list
+        print(f'Processing {len(video_names)} videos from provided list')
+    else:
+        # Extended video formats support
+        video_names = [f for f in os.listdir(folder_path) if f.lower().endswith(
+            ('.mp4', '.avi', '.mkv', '.mov', '.wmv', '.flv', '.webm', '.m4v', '.MP4'))]
+        print(f'Found {len(video_names)} videos to process')
 
     total_detections = 0
     total_processing_time = 0
@@ -208,10 +208,10 @@ def label_all_videos(folder_path: str,
 
     for index, name in enumerate(video_names):
         try:
-            # Update progress if callback provided
+            # Show progress before processing each file
             if progress_callback:
-                progress = (index / len(video_names)) * 100
-                progress_callback(progress, f"Processing video {name}...")
+                # Pass the file index and filename to the callback
+                progress_callback(index, name)
 
             result = label_video(
                 name,
@@ -219,7 +219,7 @@ def label_all_videos(folder_path: str,
                 folder_path_output=folder_path_output,
                 detector=detector,
                 csv_logger=csv_logger,
-                progress_callback=progress_callback
+                progress_callback=None  # Remove frame-level progress to show only file completion
             )
 
             if result['success']:
@@ -234,10 +234,6 @@ def label_all_videos(folder_path: str,
         except (cv2.error, IOError, ValueError) as e:
             failed_files += 1
             print(f"Error processing {name}: {e}")
-
-    # Final progress update
-    if progress_callback:
-        progress_callback(100, "Video processing complete!")
 
     session_end_timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
     total_session_time = (time.time() - start_session_time) * 1000

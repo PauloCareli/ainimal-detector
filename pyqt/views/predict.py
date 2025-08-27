@@ -1,11 +1,41 @@
 import os
 
-from PyQt5.QtCore import Qt, QUrl
+from PyQt5.QtCore import Qt, QUrl, QThread, pyqtSignal
 from PyQt5.QtGui import QDesktopServices, QFont
 from PyQt5.QtWidgets import (QComboBox, QDialog, QFileDialog, QGridLayout,
                              QGroupBox, QHBoxLayout, QLabel, QLineEdit,
                              QMessageBox, QProgressBar, QPushButton,
                              QScrollArea, QTextEdit, QVBoxLayout, QWidget)
+
+
+class PredictionWorker(QThread):
+    """Worker thread for background prediction processing"""
+    progress_updated = pyqtSignal(float, str)
+    prediction_finished = pyqtSignal(dict)
+    prediction_error = pyqtSignal(str)
+
+    def __init__(self, folder_path, model, presenter):
+        super().__init__()
+        self.folder_path = folder_path
+        self.model = model
+        self.presenter = presenter
+
+    def run(self):
+        """Run the prediction in background thread"""
+        try:
+            def progress_callback(progress, message):
+                self.progress_updated.emit(progress, message)
+
+            results = self.presenter.predict(
+                self.folder_path,
+                self.model,
+                progress_callback=progress_callback
+            )
+
+            self.prediction_finished.emit(results)
+
+        except Exception as e:
+            self.prediction_error.emit(str(e))
 
 
 class PredictView(QWidget):
@@ -16,6 +46,7 @@ class PredictView(QWidget):
         self.ai_models = []
         self.model = None
         self.output_path = ""
+        self.prediction_worker = None  # For background processing
 
         self.setup_ui()
 
@@ -277,7 +308,7 @@ class PredictView(QWidget):
                 self.update_output_path()
 
     def predict(self):
-        """Start the prediction process"""
+        """Start the prediction process in background thread"""
         folder_path = self.path_line_edit.text()
         selected_model = self.model_combo_box.currentText()
 
@@ -291,39 +322,56 @@ class PredictView(QWidget):
                                 "Please select an AI model for prediction.")
             return
 
+        # Check if a prediction is already running
+        if self.prediction_worker and self.prediction_worker.isRunning():
+            QMessageBox.warning(self, "Prediction Running",
+                                "A prediction is already in progress. Please wait for it to complete.")
+            return
+
+        # Get the selected model
+        self.set_current_model(selected_model)
+        if not self.model:
+            QMessageBox.critical(self, "Model Error",
+                                 "Selected model not found")
+            return
+
+        # Ensure output path exists
+        if not os.path.exists(self.output_path):
+            os.makedirs(self.output_path)
+
         # Start prediction process
         self.status_label.setText("Starting prediction...")
         self.progress_bar.setVisible(True)
         self.progress_bar.setValue(0)
         self.predict_button.setEnabled(False)
 
+        # Create and start worker thread
+        self.prediction_worker = PredictionWorker(
+            folder_path,
+            self.model,
+            self.view_instance.presenter.predict_presenter
+        )
+
+        # Connect signals
+        self.prediction_worker.progress_updated.connect(
+            self.on_progress_updated)
+        self.prediction_worker.prediction_finished.connect(
+            self.on_prediction_finished)
+        self.prediction_worker.prediction_error.connect(
+            self.on_prediction_error)
+
+        # Start the worker
+        self.prediction_worker.start()
+
+    def on_progress_updated(self, progress, message):
+        """Handle progress updates from worker thread"""
+        # Use the actual progress percentage from the prediction process
+        self.update_progress_bar(progress / 100)  # Convert to 0.0-1.0 range
+        self.status_label.setText(message)
+
+    def on_prediction_finished(self, results):
+        """Handle successful prediction completion"""
         try:
-            # Update progress
-            self.update_progress_bar(0.1)
-            self.status_label.setText("Loading model...")
-
-            # Get the selected model
-            self.set_current_model(selected_model)
-            if not self.model:
-                raise Exception("Selected model not found")
-
-            # Ensure output path exists
-            if not os.path.exists(self.output_path):
-                os.makedirs(self.output_path)
-
-            self.update_progress_bar(0.2)
-            self.status_label.setText("Processing files...")
-
-            # Define progress callback
-            def progress_callback(progress, message):
-                self.update_progress_bar(
-                    0.2 + (progress / 100) * 0.7)  # Scale to 20-90%
-                self.status_label.setText(message)
-
-            # Perform the actual prediction with progress updates
-            results = self.view_instance.presenter.predict_presenter.predict(
-                folder_path, self.model, progress_callback=progress_callback)
-
             self.update_progress_bar(0.95)
             self.status_label.setText("Finalizing results...")
 
@@ -351,8 +399,8 @@ Failed: {summary['failed_files']}
 Total Detections: {summary['total_detections']}
 Processing Time: {summary['total_processing_time_ms']/1000:.2f} seconds
 
-Model: {selected_model}
-Input folder: {folder_path}
+Model: {self.model_combo_box.currentText()}
+Input folder: {self.path_line_edit.text()}
 Results saved to: {output_path}"""
 
             if csv_paths:
@@ -368,16 +416,19 @@ Results saved to: {output_path}"""
             output_folder_path = os.path.join(project_root, output_path)
             QDesktopServices.openUrl(QUrl.fromLocalFile(output_folder_path))
 
-        except Exception as e:
-            self.status_label.setText("Prediction failed!")
-            QMessageBox.critical(
-                self, "Prediction Error",
-                f"An error occurred during prediction:\n{str(e)}"
-            )
         finally:
             self.predict_button.setEnabled(True)
-            # Hide progress bar after a short delay
             self.progress_bar.setVisible(False)
+
+    def on_prediction_error(self, error_message):
+        """Handle prediction errors"""
+        self.status_label.setText("Prediction failed!")
+        QMessageBox.critical(
+            self, "Prediction Error",
+            f"An error occurred during prediction:\n{error_message}"
+        )
+        self.predict_button.setEnabled(True)
+        self.progress_bar.setVisible(False)
 
     def update_progress_bar(self, progress_ratio):
         """Update progress bar with a ratio between 0.0 and 1.0"""

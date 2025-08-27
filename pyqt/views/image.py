@@ -161,14 +161,14 @@ class ImageViewerDialog(QDialog):
         self.fullscreen_btn.setFixedSize(100, 35)
         self.fullscreen_btn.setStyleSheet("""
             QPushButton {
-                background-color: #4CAF50;
+                background-color: #00ccff;
                 color: white;
                 border: none;
                 border-radius: 4px;
                 font-weight: bold;
             }
             QPushButton:hover {
-                background-color: #00ccff;
+                background-color: #0099cc;
             }
         """)
         header_layout.addWidget(self.fullscreen_btn)
@@ -463,7 +463,7 @@ class ImageView(QWidget):
         self.main_layout.setContentsMargins(15, 15, 15, 15)
 
         # Title
-        title_label = QLabel("🖼️ Image & Video Gallery")
+        title_label = QLabel("Image & Video Gallery")
         title_font = QFont()
         title_font.setPointSize(20)
         title_font.setBold(True)
@@ -489,7 +489,7 @@ class ImageView(QWidget):
                 height: 25px;
             }
             QProgressBar::chunk {
-                background-color: #4CAF50;
+                background-color: #00ccff;
                 border-radius: 3px;
             }
         """)
@@ -632,15 +632,31 @@ class ImageView(QWidget):
                                 '.mkv', '.wmv', '.flv', '.webm']
             all_extensions = image_extensions + video_extensions
 
-            # Find all supported files
+            # Find all supported files (with optional recursion)
             self.all_files = []
+            recursive_search = False
+            try:
+                # Try to get recursive search setting from view instance
+                if hasattr(self.view_instance, 'presenter') and self.view_instance.presenter:
+                    recursive_search = getattr(
+                        self.view_instance.presenter.model.settings_model, 'recursive_folder_search', False)
+            except (AttributeError, TypeError):
+                pass
+
             for ext in all_extensions:
-                # Use case-insensitive pattern
-                pattern = os.path.join(folder_path, f"*{ext}")
-                files_found = glob.glob(pattern, recursive=False)
-                # Also check uppercase
-                pattern_upper = os.path.join(folder_path, f"*{ext.upper()}")
-                files_found.extend(glob.glob(pattern_upper, recursive=False))
+                # Use case-insensitive pattern with optional recursion
+                if recursive_search:
+                    pattern = os.path.join(folder_path, "**", f"*{ext}")
+                    pattern_upper = os.path.join(
+                        folder_path, "**", f"*{ext.upper()}")
+                else:
+                    pattern = os.path.join(folder_path, f"*{ext}")
+                    pattern_upper = os.path.join(
+                        folder_path, f"*{ext.upper()}")
+
+                files_found = glob.glob(pattern, recursive=recursive_search)
+                files_found.extend(
+                    glob.glob(pattern_upper, recursive=recursive_search))
                 self.all_files.extend(files_found)
 
             # Remove duplicates (in case of case-insensitive filesystem)
@@ -993,7 +1009,7 @@ class ImageView(QWidget):
             }}
             
             QProgressBar::chunk {{
-                background-color: #4CAF50;
+                background-color: #00ccff;
                 border-radius: 3px;
             }}
         """)

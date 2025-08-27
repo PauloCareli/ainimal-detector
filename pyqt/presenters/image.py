@@ -17,23 +17,40 @@ class ImagePresenter:
         self.view.image_view.progress_bar.setVisible(True)
 
         folder_contents = []
-        directories = os.listdir(folder_path)
-        for file_index, file_name in enumerate(directories):
-            self.view.image_view.update_progress_bar(
-                file_index/(len(directories)-1))
 
-            file_path = os.path.join(folder_path, file_name)
+        # Get all files (with optional recursion)
+        all_files = []
+        if self.model.settings_model.recursive_folder_search:
+            # Recursive search through all subdirectories
+            for root, _, files in os.walk(folder_path):
+                for file in files:
+                    file_path = os.path.join(root, file)
+                    # Store both the full path and relative path for display
+                    relative_path = os.path.relpath(file_path, folder_path)
+                    all_files.append((file_path, relative_path))
+        else:
+            # Only scan the immediate folder
+            directories = os.listdir(folder_path)
+            for file_name in directories:
+                file_path = os.path.join(folder_path, file_name)
+                if os.path.isfile(file_path):  # Only include files, not directories
+                    all_files.append((file_path, file_name))
+
+        for file_index, (file_path, display_name) in enumerate(all_files):
+            if len(all_files) > 1:  # Avoid division by zero
+                self.view.image_view.update_progress_bar(
+                    file_index/(len(all_files)-1))
 
             # Check if the file is an image or video
-            if file_name.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp')):
+            if display_name.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.bmp')):
                 pixmap = QPixmap(file_path)
-            elif file_name.lower().endswith(('.mp4', '.avi', '.mkv')):
+            elif display_name.lower().endswith(('.mp4', '.avi', '.mkv')):
                 pixmap = self.get_video_frame(file_path)
             else:
                 continue  # Skip non-supported file types
 
             folder_contents.append(
-                {"pixmap": pixmap, "name": file_name, "path": file_path})
+                {"pixmap": pixmap, "name": display_name, "path": file_path})
 
         return folder_contents
 

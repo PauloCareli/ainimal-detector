@@ -1,7 +1,7 @@
 import os
 import cv2
 import time
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 
 from object_detector import ObjectDetector
 from utils.csv_logger import DetectionCSVLogger
@@ -22,8 +22,9 @@ def label_image(name: str,
     image_path = folder_path.replace("\\", "/") + "/" + name
     image_path_out = folder_path_output.replace("\\", "/") + "/" + name
 
-    # Ensure the output directory exists
-    os.makedirs(folder_path_output, exist_ok=True)
+    # Ensure the output directory exists (including subdirectories)
+    output_dir = os.path.dirname(image_path_out)
+    os.makedirs(output_dir, exist_ok=True)
 
     start_time = time.time()
     img = cv2.imread(image_path)
@@ -118,7 +119,8 @@ def label_all_images(folder_path: str,
                      folder_path_output: str = "/output",
                      detector: ObjectDetector = ObjectDetector(),
                      csv_logger: Optional[DetectionCSVLogger] = None,
-                     progress_callback=None
+                     progress_callback=None,
+                     file_list: Optional[List[str]] = None
                      ) -> Dict[str, Any]:
     """
     Process all images in a folder and optionally log detections to CSV.
@@ -129,10 +131,14 @@ def label_all_images(folder_path: str,
     start_session_time = time.time()
     session_start_timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
 
-    image_names = [f for f in os.listdir(folder_path) if f.lower().endswith(
-        ('.png', '.jpg', '.jpeg', '.gif', ".JPG"))]
-
-    print(f'Found {len(image_names)} images to process')
+    # Use provided file list or scan folder
+    if file_list is not None:
+        image_names = file_list
+        print(f'Processing {len(image_names)} images from provided list')
+    else:
+        image_names = [f for f in os.listdir(folder_path) if f.lower().endswith(
+            ('.png', '.jpg', '.jpeg', '.gif', ".JPG"))]
+        print(f'Found {len(image_names)} images to process')
 
     total_detections = 0
     total_processing_time = 0
@@ -143,8 +149,8 @@ def label_all_images(folder_path: str,
         try:
             # Update progress if callback provided
             if progress_callback:
-                progress = (index / len(image_names)) * 100
-                progress_callback(progress, f"Processing {name}...")
+                # Pass the file index and filename to the callback
+                progress_callback(index, name)
 
             result = label_image(
                 name,
@@ -165,10 +171,6 @@ def label_all_images(folder_path: str,
         except Exception as e:
             failed_files += 1
             print(f"Error processing {name}: {e}")
-
-    # Final progress update
-    if progress_callback:
-        progress_callback(100, "Processing complete!")
 
     session_end_timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
     total_session_time = (time.time() - start_session_time) * 1000
@@ -199,8 +201,3 @@ def label_all_images(folder_path: str,
         'total_processing_time_ms': total_session_time,
         'csv_paths': csv_logger.get_csv_paths() if csv_logger else None
     }
-
-
-if __name__ == "__main__":
-    # label_image(name='jaguar3.jpg')
-    label_all_images()

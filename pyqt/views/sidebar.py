@@ -18,25 +18,39 @@ class Sidebar(QWidget):
         # add all widgets
         self.theme_btn = QtWidgets.QToolButton(self)
         self.theme_btn.setMinimumHeight(ICON_SIZE)
+        self.theme_btn.setToolTip("Toggle between light and dark theme")
 
         # Add the three-line menu button
         self.menu_btn = QtWidgets.QToolButton(self)
         self.menu_btn.setIcon(QIcon(get_icon_path().get("menu")))
         self.menu_btn.clicked.connect(self.toggle_menu)
+        self.menu_btn.setToolTip("Toggle sidebar menu visibility")
         self.menu_visible = True
 
         self.btn_0 = QPushButton(
             QIcon(get_icon_path().get("home")), 'Home', self)
+        self.btn_0.setToolTip("Navigate to the home/welcome page")
+
         self.btn_1 = QPushButton(
             QIcon(get_icon_path().get("predict")), 'Predict', self)
+        self.btn_1.setToolTip("Run AI prediction on images/videos")
+
         self.btn_2 = QPushButton(
             QIcon(get_icon_path().get("report")), 'Report', self)
+        self.btn_2.setToolTip("View detection reports and analysis results")
+
         self.btn_3 = QPushButton(
             QIcon(get_icon_path().get("image")), 'Image', self)
+        self.btn_3.setToolTip("Browse and view images with detection results")
+
         self.btn_4 = QPushButton(
             QIcon(get_icon_path().get("settings")), 'Settings', self)
+        self.btn_4.setToolTip(
+            "Configure application settings and AI model parameters")
+
         self.btn_5 = QPushButton(
             QIcon(get_icon_path().get("about")), 'About', self)
+        self.btn_5.setToolTip("View application information and help")
 
         # First Box
         self.theme_btn.clicked.connect(self.theme)
