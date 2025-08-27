@@ -214,15 +214,20 @@ class Sidebar(QWidget):
         current_settings["theme"] = new_theme
         self.view.presenter.model.save_settings(current_settings)
 
-        # Refresh the settings page styling for the new theme
+        # Refresh the styling for all pages that support it
         try:
+            # Refresh settings page styling
             self.view.config_view.refresh_styling()
             # Also update the theme dropdown to show the correct selection
             display_name = self.view.config_view.reverse_theme_mapping.get(
                 new_theme, "Light")
             self.view.config_view.theme_combo.setCurrentText(display_name)
+
+            # Refresh predict page styling
+            self.view.predict.refresh_styling()
+
         except (AttributeError, KeyError) as e:
-            print(f"Warning: Could not refresh settings page styling: {e}")
+            print(f"Warning: Could not refresh page styling: {e}")
 
         return
 

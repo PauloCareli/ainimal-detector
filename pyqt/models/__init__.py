@@ -23,7 +23,18 @@ class Model:
                 path=model_data.get('path'),
                 description=model_data.get('description'),
                 accuracy=model_data.get('accuracy', 0.0),
-                threshold=model_data.get('threshold', 0.6)
+                threshold=model_data.get('threshold', 0.6),
+                model_type=model_data.get('model_type'),
+                version=model_data.get('version'),
+                training_date=model_data.get('training_date'),
+                map_50=model_data.get('map_50'),
+                training_images=model_data.get('training_images'),
+                classes=model_data.get('classes'),
+                input_size=model_data.get('input_size'),
+                supported_formats=model_data.get('supported_formats'),
+                optimal_conditions=model_data.get('optimal_conditions'),
+                training_dataset=model_data.get('training_dataset'),
+                performance_notes=model_data.get('performance_notes')
             )
             ai_models.append(ai_model)
 
