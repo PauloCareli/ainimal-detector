@@ -196,12 +196,33 @@ class Sidebar(QWidget):
     def theme(self):
         self.theme_btn.setIcon(QIcon(
             get_icon_path().get("base") + f'{self.view.presenter.model.settings_model.theme}.svg'))
+
+        # Toggle theme
         if self.view.presenter.model.settings_model.theme == "light":
-            self.view.presenter.model.settings_model.theme = "dark"
+            new_theme = "dark"
         else:
-            self.view.presenter.model.settings_model.theme = "light"
-        self.view.theme.set_theme(
-            self.view.presenter.model.settings_model.theme)
+            new_theme = "light"
+
+        # Update the model
+        self.view.presenter.model.settings_model.theme = new_theme
+
+        # Apply the theme
+        self.view.theme.set_theme(new_theme)
+
+        # Save the theme change to persist it
+        current_settings = self.view.presenter.model.get_current_settings()
+        current_settings["theme"] = new_theme
+        self.view.presenter.model.save_settings(current_settings)
+
+        # Refresh the settings page styling for the new theme
+        try:
+            self.view.config_view.refresh_styling()
+            # Also update the theme dropdown to show the correct selection
+            display_name = self.view.config_view.reverse_theme_mapping.get(
+                new_theme, "Light")
+            self.view.config_view.theme_combo.setCurrentText(display_name)
+        except (AttributeError, KeyError) as e:
+            print(f"Warning: Could not refresh settings page styling: {e}")
 
         return
 

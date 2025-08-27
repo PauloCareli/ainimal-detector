@@ -5,6 +5,7 @@ from utils.paths import get_icon_path
 from .image import ImagePresenter
 from .model import ModelPresenter
 from .predict import PredictPresenter
+from .settings import SettingsPresenter
 
 
 class Presenter:
@@ -16,6 +17,7 @@ class Presenter:
         self.image_presenter = ImagePresenter(model, view)
         self.model_presenter = ModelPresenter(model, view)
         self.predict_presenter = PredictPresenter(model, view)
+        self.settings_presenter = SettingsPresenter(model, view)
 
         self.on_load_app()
 

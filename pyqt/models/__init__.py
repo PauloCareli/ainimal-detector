@@ -35,12 +35,31 @@ class Model:
 
         return self.create_ai_models_from_data(data)
 
-    def load_settings(self, settings={}):
+    def load_settings(self, settings=None):
+        if settings is None:
+            settings = {}
         json_file_path = "pyqt/settings.json"
         settings = load_json(json_file_path)
         self.settings_model.set_general_settings(settings)
         print("Settings loaded")
-    # def save_settings(self, settings={}):
-    #     if len(settings):
-    #         for key, value in settings.items():
-    #             self.settings_model.get(key) = value
+        return self.settings_model.get_all_settings()
+
+    def save_settings(self, settings=None):
+        """Save settings to JSON file and update the model"""
+        if settings is None:
+            settings = {}
+        if settings:
+            # Update the settings model
+            self.settings_model.update_settings(settings)
+
+            # Save to JSON file
+            json_file_path = "pyqt/settings.json"
+            from utils.json_manipulation import save_json
+            save_json(settings, path=json_file_path)
+            print("Settings saved successfully")
+            return True
+        return False
+
+    def get_current_settings(self):
+        """Get current settings from the model"""
+        return self.settings_model.get_all_settings()
